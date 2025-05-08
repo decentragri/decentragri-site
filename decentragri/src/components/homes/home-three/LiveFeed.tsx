@@ -1,15 +1,15 @@
 "use client"
 import Image, { StaticImageData } from "next/image"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Modal from "react-modal";
 
+import { getSoilMeterScan, SensorReadingsWithInterpretation } from "@/api/api";
 import thumb1 from "@/assets/images/hero/hero2.png"
 import shape from "@/assets/images/shape/use-shape-1.png"
-import Modal from "react-modal";
-// Tab title
+
 const tab_title: string[] = ["Live Feed"];
 
-// Main info section
 interface DataType {
 	id: number;
 	title: string;
@@ -20,47 +20,83 @@ interface DataType {
 }
 
 const cause_data: DataType[] = [
-    {
-        id: 0,
-        title: "Real-time Environmental Data from the Field.",
-        desc: `You're viewing a live feed of sensor data directly from the DecentrAgri field unit. Each scan captures vital stats like soil pH, temperature, and moisture—processed instantly by our AI. These readings are immutable, timestamped, and permanently verifiable on-chain. Empowering farmers, researchers, and ecosystems with actionable insight—live.`,
-        thumb: thumb1,
-    },
-    
+	{
+		id: 0,
+		title: "Real-time Environmental Data from the Field.",
+		desc: `You're viewing a live feed of sensor data directly from the DecentrAgri field unit. Each scan captures vital stats like soil pH, temperature, and moisture—processed instantly by our AI. These readings are immutable, timestamped, and permanently verifiable on-chain. Empowering farmers, researchers, and ecosystems with actionable insight—live.`,
+		thumb: thumb1,
+	},
 ];
 
-interface ScanHistory {
-    id: number;
-    date: string;
-    summary: string;
-}
 
-// Fake scan history
-const scanHistory: ScanHistory[] = [
-	{ id: 1, date: "2025-05-09", summary: "Soil pH 6.8, Moisture 58%, Temp 26.1°C" },
-	{ id: 2, date: "2025-05-08", summary: "Soil pH 6.7, Moisture 54%, Temp 27.3°C" },
-	{ id: 3, date: "2025-05-07", summary: "Soil pH 7.0, Moisture 62%, Temp 25.8°C" },
-];
 
 const LiveFeed = () => {
 	const [activeTab, setActiveTab] = useState(0);
+	const [scanHistory, setScanHistory] = useState<SensorReadingsWithInterpretation[]>([]);
+	const [selectedScan, setSelectedScan] = useState<SensorReadingsWithInterpretation | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-	const handleTabClick = (index: number) => {
-		setActiveTab(index);
-	};
-
-	const [selectedScan, setSelectedScan] = useState<ScanHistory | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const openModal = (scan: ScanHistory) => {
+	const openModal = (scan: SensorReadingsWithInterpretation) => {
 		setSelectedScan(scan);
 		setIsModalOpen(true);
 	};
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
 
+    const fetchScanData = async () => {
+        setLoading(true);
+        setError(null);
+    
+        try {
+            const response = await getSoilMeterScan();
+    
+            if ("error" in response) {
+                setError(response.error);
+            } else {
+                // Create a new scan entry conforming to SensorReadingsWithInterpretation
+                const now = new Date();
+    
+                const newScan: SensorReadingsWithInterpretation = {
+                    createdAt: response.createdAt ?? now.toISOString(),
+                    interpretation: response.interpretation,
+    
+                    // Sensor readings
+                    ph: response.ph,
+                    moisture: response.moisture,
+                    temperature: response.temperature,
+                    humidity: response.humidity,
+                    fertility: response.fertility,
+                    sunlight: response.sunlight,
+    
+                    username: response.username,
+                    sensorId: response.sensorId,
+                    cropType: response.cropType ?? undefined,
+                    
+
+                    soilPh: response.soilPh ?? response.ph
+                };
+    
+                setScanHistory(prev => [newScan, ...prev]);
+            }
+        } catch (err: unknown) {
+			setError(`Unexpected error fetching scan: ${err}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+
+	useEffect(() => {
+		fetchScanData();
+
+		// Optional: auto-refresh every 30s
+		const interval = setInterval(fetchScanData, 30000);
+		return () => clearInterval(interval);
+	}, []);
 
 	return (
 		<section className="use-cases-section pt-110 pb-65">
@@ -68,9 +104,7 @@ const LiveFeed = () => {
 				<div className="shape shape-one"><span><Image src={shape} alt="shape" /></span></div>
 				<div className="container">
 					<div className="row">
-						<div className="col-lg-12">
-
-						</div>
+						<div className="col-lg-12"></div>
 					</div>
 
 					<div className="row">
@@ -79,7 +113,7 @@ const LiveFeed = () => {
 								<ul className="nav nav-tabs justify-content-center">
 									{tab_title.map((tab, index) => (
 										<li key={index}>
-											<button className={`nav-link ${activeTab === index ? "active" : ""}`} onClick={() => handleTabClick(index)}>
+											<button className={`nav-link ${activeTab === index ? "active" : ""}`} onClick={() => setActiveTab(index)}>
 												{tab}
 											</button>
 										</li>
@@ -113,33 +147,38 @@ const LiveFeed = () => {
 												</div>
 											</div>
 
-											{/* RIGHT SIDE - Scan History Panel */}
+											{/* RIGHT SIDE */}
 											<div className="col-lg-7">
 												<div className="ac-tab_image-box mb-50">
 													<div className="scan-history-panel p-4 rounded-lg shadow-sm bg-light" style={{ maxHeight: "400px", overflowY: "auto" }}>
-                                                    <div className="d-flex justify-content-between align-items-center mb-3">
-                                                            <h6 className="mb-0">Scan History</h6>
-                                                            <div className="live-indicator d-flex align-items-center gap-2">
-                                                                <span className="blinking-dot"></span>
-                                                                <small className="text-success">Live</small>
-                                                            </div>
-                                                        </div>
+														<div className="d-flex justify-content-between align-items-center mb-3">
+															<h6 className="mb-0">Scan History</h6>
+															<div className="live-indicator d-flex align-items-center gap-2">
+																<span className="blinking-dot"></span>
+																<small className="text-success">Live</small>
+															</div>
+														</div>
 
-                                                        {scanHistory.map(entry => (
-                                                            <div key={entry.id} className="scan-entry p-3 mb-3 bg-white rounded border d-flex justify-content-between align-items-start">
-                                                                <div>
-                                                                    <strong>{entry.date}</strong>
-                                                                    <p className="mb-0">{entry.summary}</p>
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => openModal(entry)}
-                                                                    className="btn btn-link p-0 text-primary"
-                                                                    title="View Details"
-                                                                >
-                                                                    <i className="fas fa-eye"></i>
-                                                                </button>
-                                                            </div>
-                                                        ))}
+														{loading && <p className="text-muted">Loading latest scan...</p>}
+														{error && <p className="text-danger">Error: {error}</p>}
+
+														{scanHistory.map(entry => (
+															<div key={entry.createdAt} className="scan-entry p-3 mb-3 bg-white rounded border d-flex justify-content-between align-items-start">
+																<div>
+																	<strong>{entry.createdAt}</strong>
+																	<p className="mb-0">
+                                                                        Soil pH: {entry.ph}, Moisture: {entry.moisture}%, Temp: {entry.temperature}°C
+                                                                    </p>
+																</div>
+																<button
+																	onClick={() => openModal(entry)}
+																	className="btn btn-link p-0 text-primary"
+																	title="View Details"
+																>
+																	<i className="fas fa-eye"></i>
+																</button>
+															</div>
+														))}
 													</div>
 												</div>
 											</div>
@@ -152,6 +191,7 @@ const LiveFeed = () => {
 					</div>
 				</div>
 			</div>
+
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
@@ -161,10 +201,29 @@ const LiveFeed = () => {
                 ariaHideApp={false}
             >
                 <div className="p-4">
-                    
-                    <h5 className="mb-3">Scan Details - {selectedScan?.date}</h5>
-                    <p><strong>Summary:</strong> {selectedScan?.summary}</p>
-                    {/* Extend with full details if available */}
+                    <h5 className="mb-3">Scan Details</h5>
+                    {selectedScan ? (
+                        <>
+                            <p><strong>Date:</strong> {new Date(selectedScan.createdAt).toLocaleString()}</p>
+                            <p><strong>User:</strong> {selectedScan.username}</p>
+                            <p><strong>Sensor ID:</strong> {selectedScan.sensorId}</p>
+                            <hr />
+                            <ul className="list-unstyled">
+                                <li><strong>Soil pH:</strong> {selectedScan.ph}</li>
+                                <li><strong>Moisture:</strong> {selectedScan.moisture}%</li>
+                                <li><strong>Temperature:</strong> {selectedScan.temperature}°C</li>
+                                <li><strong>Humidity:</strong> {selectedScan.humidity}%</li>
+                                <li><strong>Fertility:</strong> {selectedScan.fertility} µS/cm</li>
+                                <li><strong>Sunlight:</strong> {selectedScan.sunlight} lux</li>
+                                {selectedScan.cropType && <li><strong>Crop Type:</strong> {selectedScan.cropType}</li>}
+                            </ul>
+                            <hr />
+                            <p><strong>Interpretation:</strong></p>
+                            <p>{selectedScan.interpretation}</p>
+                        </>
+                    ) : (
+                        <p>No data available.</p>
+                    )}
                     <button onClick={closeModal} className="theme-btn style-one mt-4">
                         Close
                     </button>
@@ -172,8 +231,7 @@ const LiveFeed = () => {
             </Modal>
 
 		</section>
-	)
-}
+	);
+};
 
-export default LiveFeed
- 
+export default LiveFeed;
