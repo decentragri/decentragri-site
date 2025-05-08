@@ -14,7 +14,7 @@ export interface SensorReadings  {
 };
 
 export interface SensorReadingsWithInterpretation extends SensorReadings {
-    soilPh: number;
+
 	interpretation: string;
 	createdAt: string;
 }
@@ -28,7 +28,11 @@ export async function getSoilMeterScan(): Promise<SensorReadingsWithInterpretati
 	try {
 		console.info("Calling backend to get soil meter data:", requestUrl);
 
-		const response = await axios.get(requestUrl);
+		const response = await axios.get(requestUrl, {
+            headers: {
+                Authorization: `Bearer ${process.env.SENSOR_FEED_SERVICE_JWT}`,
+            },
+        });
 
 		if (response.status === 200 && response.data) {
 			if (response.data.error) {

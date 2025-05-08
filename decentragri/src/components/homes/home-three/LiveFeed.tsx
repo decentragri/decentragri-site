@@ -76,8 +76,6 @@ const LiveFeed = () => {
                     sensorId: response.sensorId,
                     cropType: response.cropType ?? undefined,
                     
-
-                    soilPh: response.soilPh ?? response.ph
                 };
     
                 setScanHistory(prev => [newScan, ...prev]);
