@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌱 DecentrAgri Website
 
-## Getting Started
+Welcome to the official website repository of **DecentrAgri**, a decentralized, data-driven platform revolutionizing agriculture through transparency, sustainability, and open collaboration. This website serves as the public-facing entry point for our ecosystem — introducing our vision, showcasing real-time agricultural data, and providing tools and insights for farmers, researchers, and stakeholders.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+DecentrAgri is a Web3-powered environmental monitoring system and open agricultural network. We collect and share verified farm data as **on-chain assets**, empowering farmers and agricultural stakeholders with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Real-time soil and environmental data**
+- **Decentralized data ownership and integrity (via IPFS & NFTs)**
+- **Smart farming dashboards**
+- **Open-access analytics for environmental sustainability**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This website presents our vision, technology stack, ongoing collaborations, and provides a user-friendly interface for interacting with our data and services.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Website Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 🌍 Informative homepage about DecentrAgri’s mission and vision  
+- 📊 Real-time sensor dashboard (connected to soil/environment sensors)  
+- 📖 Whitepaper access and documentation  
+- 🧑‍🌾 Profiles and community stories of partnered farms  
+- 🧬 IPFS-backed farm data explorer (optional module)  
+- 📬 Contact, support, and collaboration inquiry forms  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Built With
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework**: [Next.js 15+](https://nextjs.org) with the App Router  
+- **Language**: TypeScript  
+- **Styling**: CSS & custom component library  
+- **Icons**: Lucide Icons  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📁 Project Structure

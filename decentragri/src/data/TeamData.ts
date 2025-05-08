@@ -46,7 +46,7 @@ const team_data: DataType[] = [
 		img: team_2,
 		title: "Anthony Fuentes",
 		designation: "Lead Developer, Loves Farm Animals",
-      github: "https://www.facebook.com/share/1ATnY5sGZE/"
+      github: "https://github.com/decentragri"
 
 	}
 ];
