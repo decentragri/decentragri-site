@@ -33,8 +33,3 @@ This website presents our vision, technology stack, ongoing collaborations, and 
 - **Framework**: [Next.js 15+](https://nextjs.org) with the App Router  
 - **Language**: TypeScript  
 - **Styling**: CSS & custom component library  
-- **Icons**: Lucide Icons  
-
----
-
-## 📁 Project Structure
