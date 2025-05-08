@@ -4,6 +4,7 @@ import WorkArea from "./WorkArea"
 import Faq from "./Faq"
 import FooterTwo from "@/layouts/footers/FooterTwo"
 import HeaderThree from "@/layouts/headers/HeaderThree"
+import LiveFeed from "./LiveFeed"
 
 const HomeThree = () => {
    return (
@@ -13,7 +14,9 @@ const HomeThree = () => {
             <div className="smooth-wrapper">
                <div className="smooth-content">
                   <Hero />
+                  <LiveFeed />
                   <Cause />
+
                   {/* <Avatar /> */}
                   {/* <AiVoiceover /> */}
                   <WorkArea />

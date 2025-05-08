@@ -1,3 +1,5 @@
+# Docker Ignore File
+
 node_modules
 Dockerfile
 README.md
@@ -5,4 +7,3 @@ README.md
 .git
 .next
 .env*
-
