@@ -8,6 +8,7 @@ import { getSoilMeterScan, SensorReadingsWithInterpretation } from "@/api/api";
 import thumb1 from "@/assets/images/hero/hero2.png"
 import shape from "@/assets/images/shape/use-shape-1.png"
 
+
 const tab_title: string[] = ["Live Feed"];
 
 interface DataType {

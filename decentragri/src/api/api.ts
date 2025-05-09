@@ -23,7 +23,7 @@ export interface SensorReadingsWithInterpretation extends SensorReadings {
 
 
 export async function getSoilMeterScan(): Promise<SensorReadingsWithInterpretation | { error: string }> {
-	const requestUrl = "http://decentragri-ai-agent:8085/api/get-sensor-readings";
+	const requestUrl = "https://api.decentragri.com/api/get-sensor-readings";
 
 	try {
 		console.info("Calling backend to get soil meter data:", requestUrl);
