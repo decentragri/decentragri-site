@@ -26,7 +26,6 @@ export async function getSoilMeterScan(): Promise<SensorReadingsWithInterpretati
 
 	try {
 		console.info("Calling backend to get soil meter data:", requestUrl);
-        console.log(process.env.SENSOR_FEED_SERVICE_JWT)
 		const response = await axios.get(requestUrl, {
             headers: {
                 Authorization: `Bearer h7Q5TAFX6BHaVP0nGiA9Y3U4RHgzaHdG`,
