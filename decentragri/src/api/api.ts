@@ -1,6 +1,17 @@
 import axios from "axios";
 
-export interface SensorReadings  {
+export interface InterpretationDetail {
+	evaluation: string;
+	fertility?: string;
+	moisture?: string;
+	ph?: string;
+	temperature?: string;
+	sunlight?: string;
+	humidity?: string;
+	// You can add more fields here if the interpretation expands
+}
+
+export interface SensorReadings {
 	fertility: number;
 	moisture: number;
 	ph: number;
@@ -10,13 +21,13 @@ export interface SensorReadings  {
 	cropType?: string;
 	username: string;
 	sensorId: string;
-
-};
+}
 
 export interface SensorReadingsWithInterpretation extends SensorReadings {
-	interpretation: string;
+	interpretation: InterpretationDetail;
 	createdAt: string;
 }
+
 
 
 

@@ -40,6 +40,7 @@ const LiveFeed = () => {
 	const [error, setError] = useState<string | null>(null);
 
 	const openModal = (scan: SensorReadingsWithInterpretation) => {
+        console.log("bitch: ", scan)
 		setSelectedScan(scan);
 		setIsModalOpen(true);
 	};
@@ -57,36 +58,19 @@ const LiveFeed = () => {
     
             if ("error" in response) {
                 setError(response.error);
+            } else if (Array.isArray(response)) {
+                console.log("Fetched scans:", response);
+                setScanHistory(response); // or [...response, ...scanHistory] if you want to append
             } else {
-                // Create a new scan entry conforming to SensorReadingsWithInterpretation
-                const now = new Date();
-    
-                const newScan: SensorReadingsWithInterpretation = {
-                    createdAt: response.createdAt ?? now.toISOString(),
-                    interpretation: response.interpretation,
-    
-                    // Sensor readings
-                    ph: response.ph,
-                    moisture: response.moisture,
-                    temperature: response.temperature,
-                    humidity: response.humidity,
-                    fertility: response.fertility,
-                    sunlight: response.sunlight,
-    
-                    username: response.username,
-                    sensorId: response.sensorId,
-                    cropType: response.cropType ?? undefined,
-                    
-                };
-    
-                setScanHistory(prev => [newScan, ...prev]);
+                setError("Unexpected response format.");
             }
         } catch (err: unknown) {
-			setError(`Unexpected error fetching scan: ${err}`);
+            setError(`Unexpected error fetching scan: ${err}`);
         } finally {
             setLoading(false);
         }
     };
+    
     
 
 	useEffect(() => {
@@ -161,23 +145,35 @@ const LiveFeed = () => {
 														{loading && <p className="text-muted">Loading latest scan...</p>}
 														{error && <p className="text-danger">Error: {error}</p>}
 
-														{scanHistory.map(entry => (
-															<div key={entry.createdAt} className="scan-entry p-3 mb-3 bg-white rounded border d-flex justify-content-between align-items-start">
-																<div>
-																	<strong>{entry.createdAt}</strong>
-																	<p className="mb-0">
-                                                                        Soil pH: {entry.ph}, Moisture: {entry.moisture}%, Temp: {entry.temperature}°C
-                                                                    </p>
-																</div>
-																<button
-																	onClick={() => openModal(entry)}
-																	className="btn btn-link p-0 text-primary"
-																	title="View Details"
-																>
-																	<i className="fas fa-eye"></i>
-																</button>
-															</div>
-														))}
+                                                        {scanHistory.map(entry => {
+                                                            const formattedDate = new Date(entry.createdAt).toLocaleString('en-US', {
+                                                                month: 'long',
+                                                                day: 'numeric',
+                                                                year: 'numeric',
+                                                                hour: 'numeric',
+                                                                minute: '2-digit',
+                                                                hour12: true,
+                                                            });
+
+                                                            return (
+                                                                <div key={entry.createdAt} className="scan-entry p-3 mb-3 bg-white rounded border d-flex justify-content-between align-items-start">
+                                                                    <div>
+                                                                        <strong>{formattedDate}</strong>
+                                                                        <p className="mb-0">
+                                                                            Soil pH: {entry.ph}, Moisture: {entry.moisture}%, Temp: {entry.temperature}°C
+                                                                        </p>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => openModal(entry)}
+                                                                        className="btn btn-link p-0 text-primary"
+                                                                        title="View Details"
+                                                                    >
+                                                                        <i className="fas fa-eye"></i>
+                                                                    </button>
+                                                                </div>
+                                                            );
+                                                        })}
+
 													</div>
 												</div>
 											</div>
@@ -190,44 +186,79 @@ const LiveFeed = () => {
 					</div>
 				</div>
 			</div>
+            <div className="w-full max-w-3xl p-6">
+	<Modal
+		isOpen={isModalOpen}
+		onRequestClose={closeModal}
+		contentLabel="Scan Details"
+		className="scan-modal max-w-3xl mx-auto rounded-lg shadow-lg bg-white"
+		overlayClassName="scan-overlay bg-black/40 fixed inset-0 z-50 flex items-center justify-center"
+		ariaHideApp={false}
+	>
+        <div className="p-6 max-h-[90vh] overflow-y-auto">
+            {selectedScan && typeof selectedScan.interpretation === 'object' && (() => {
+                const formattedDate = new Date(selectedScan.createdAt).toLocaleString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                });
 
-            <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                contentLabel="Scan Details"
-                className="scan-modal"
-                overlayClassName="scan-overlay"
-                ariaHideApp={false}
-            >
-                <div className="p-4">
-                    <h5 className="mb-3">Scan Details</h5>
-                    {selectedScan ? (
-                        <>
-                            <p><strong>Date:</strong> {new Date(selectedScan.createdAt).toLocaleString()}</p>
-                            <p><strong>User:</strong> {selectedScan.username}</p>
-                            <p><strong>Sensor ID:</strong> {selectedScan.sensorId}</p>
-                            <hr />
-                            <ul className="list-unstyled">
-                                <li><strong>Soil pH:</strong> {selectedScan.ph}</li>
-                                <li><strong>Moisture:</strong> {selectedScan.moisture}%</li>
-                                <li><strong>Temperature:</strong> {selectedScan.temperature}°C</li>
-                                <li><strong>Humidity:</strong> {selectedScan.humidity}%</li>
-                                <li><strong>Fertility:</strong> {selectedScan.fertility} µS/cm</li>
-                                <li><strong>Sunlight:</strong> {selectedScan.sunlight} lux</li>
-                                {selectedScan.cropType && <li><strong>Crop Type:</strong> {selectedScan.cropType}</li>}
-                            </ul>
-                            <hr />
-                            <p><strong>Interpretation:</strong></p>
-                            <p>{selectedScan.interpretation}</p>
-                        </>
-                    ) : (
-                        <p>No data available.</p>
-                    )}
-                    <button onClick={closeModal} className="theme-btn style-one mt-4">
-                        Close
-                    </button>
-                </div>
-            </Modal>
+                return (
+                    <div className="space-y-6">
+                        {/* Sensor Readings */}
+                        <div>
+                            <h5 className="text-lg font-semibold text-gray-700 mb-3">Sensor Readings</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-800">
+                                <p><strong className="text-gray-600">Scan Date:</strong> {formattedDate}</p>
+                                <p><strong className="text-gray-600">Crop Type:</strong> <span className="uppercase">{selectedScan.cropType ?? "N/A"}</span></p>
+                                <p><strong className="text-gray-600">Sensor ID:</strong> {selectedScan.sensorId}</p>
+                                <p><strong className="text-gray-600">Username:</strong> {selectedScan.username}</p>
+                                <p><strong className="text-gray-600">Fertility:</strong> {selectedScan.fertility} µS/cm</p>
+                                <p><strong className="text-gray-600">Moisture:</strong> {selectedScan.moisture}%</p>
+                                <p><strong className="text-gray-600">pH:</strong> {selectedScan.ph}</p>
+                                <p><strong className="text-gray-600">Temperature:</strong> {selectedScan.temperature}°C</p>
+                                <p><strong className="text-gray-600">Humidity:</strong> {selectedScan.humidity}%</p>
+                                <p><strong className="text-gray-600">Sunlight:</strong> {selectedScan.sunlight} lux</p>
+                            </div>
+                        </div>
+
+                        <hr className="border-t border-gray-200" />
+
+                        {/* Interpretation */}
+                        <div>
+                            <h5 className="text-lg font-semibold text-gray-700 mb-3">Interpretation</h5>
+                            <div className="space-y-2 text-sm text-gray-800">
+                                <p><strong className="text-gray-600">Overall Evaluation:</strong> {selectedScan.interpretation.evaluation}</p>
+                                <p><strong className="text-gray-600">Fertility:</strong> {selectedScan.interpretation.fertility }</p>
+                                <p><strong className="text-gray-600">Humidity:</strong> {selectedScan.interpretation.humidity}</p>
+                                <p><strong className="text-gray-600">Moisture:</strong> {selectedScan.interpretation.moisture}</p>
+                                <p><strong className="text-gray-600">pH:</strong> {selectedScan.interpretation.ph}</p>
+                                <p><strong className="text-gray-600">Sunlight:</strong> {selectedScan.interpretation.sunlight}</p>
+                                <p><strong className="text-gray-600">Temperature:</strong> {selectedScan.interpretation.temperature}</p>
+                            </div>
+                        </div>
+
+                        {/* Optional Bottom Close Button */}
+                        <div className="pt-4 text-right">
+                            <button
+                                onClick={closeModal}
+                                className="theme-btn style-one"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                );
+            })()}
+        </div>
+
+	</Modal>
+</div>
+
+
 
 		</section>
 	);
