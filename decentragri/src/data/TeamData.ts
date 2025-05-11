@@ -33,15 +33,6 @@ const team_data: DataType[] = [
 		twitter: "https://x.com/alviedahl"
 	},
 	{
-		id: 3,
-		img: team_3,
-		title: "Alyssa Lomeda",
-		designation: "Communications Lead, Green Advocate",
-      facebook: "https://www.facebook.com/share/1ATnY5sGZE/"
-
-
-	},
-	{
 		id: 2,
 		img: team_2,
 		title: "Anthony Fuentes",
