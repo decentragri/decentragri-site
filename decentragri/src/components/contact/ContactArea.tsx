@@ -15,7 +15,7 @@ const contact_data: DataType[] = [
       icon: "far fa-envelope-open",
       title: "Email Address",
       info: (<>
-         <p><Link href="decentragri@gmail.com">decentragri@gmail.com</Link></p>
+         <p><Link href="mailto:decentragri@gmail.com">decentragri@gmail.com</Link></p>
       </>),
    },
       {
@@ -23,7 +23,7 @@ const contact_data: DataType[] = [
       icon: "far fa-envelope-open",
       title: "Email Address",
       info: (<>
-         <p><Link href="hello@decentragri.com">hello@decentragri.com</Link></p>
+         <p><Link href="mailto:hello@decentragri.com">hello@decentragri.com</Link></p>
       </>),
    },
 
