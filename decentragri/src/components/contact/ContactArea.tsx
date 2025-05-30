@@ -18,6 +18,14 @@ const contact_data: DataType[] = [
          <p><Link href="mailto:demo123@gmail.com">decentragri@gmail.com</Link></p>
       </>),
    },
+      {
+      id: 3,
+      icon: "far fa-envelope-open",
+      title: "Email Address",
+      info: (<>
+         <p><Link href="mailto:demo123@gmail.com">hello@decentragri.com</Link></p>
+      </>),
+   },
 
 ];
 
