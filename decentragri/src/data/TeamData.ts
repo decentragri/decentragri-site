@@ -21,21 +21,21 @@ const team_data: DataType[] = [
 		id: 1,
 		img: team_1,
 		title: "Trevin Olegario",
-		designation: "CEO, Developer, Green Advocate",
+		designation: "CEO,  Lead Developer, Founder",
 		linkedIn: "https://www.linkedin.com/in/trevin-dave-clerenz-olegario-546749211",
 	},
 	{
 		id: 4,
 		img: team_4,
 		title: "Yehna Lee",
-		designation: "Marketing, Green Advocate",
+		designation: "Marketing & Strategy, Co-founder",
 		twitter: "https://x.com/alviedahl"
 	},
 	{
 		id: 2,
 		img: team_2,
-		title: "Anthony Fuentes",
-		designation: "Lead Developer, Loves Farm Animals",
+		title: "Paul Arriola",
+		designation: "Blockchain integrations",
       github: "https://github.com/decentragri"
 
 	}
